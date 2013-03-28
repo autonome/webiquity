@@ -12,6 +12,8 @@ Concept
 * Commands are previewed by loading preview URL into iframe repeatedly (move to postMessage)
 * Commands are web pages, so utilize cache for quick asset loading and permissions model is the web permissions model
 
+Demo page (no commands yet): http://autonome.github.com/webiquity/demo.html
+
 Notes
 * Gutted the Ubiquity code, removing as much as possible, while retaining the parser core
 * Nountypes themselves are super dodgy, need a full rewrite
