@@ -1,19 +1,21 @@
-const DEFAULT_PREVIEW_URL = "preview.html";
-const DEFAULT_MAX_SUGGESTIONS = 5;
-const MIN_MAX_SUGGS = 1;
-const MAX_MAX_SUGGS = 42;
+const DEFAULT_PREVIEW_URL = "data:text/html,No suggestions"
+const DEFAULT_MAX_SUGGESTIONS = 5
+const MIN_MAX_SUGGS = 1
+const MAX_MAX_SUGGS = 42
 
-const NULL_QUERY = {suggestionList: [], finished: true, hasResults: false};
-
-var gDomNodes = {};
+const NULL_QUERY = {
+  suggestionList: [],
+  finished: true,
+  hasResults: false
+}
 
 CommandManager.__defineGetter__("maxSuggestions", function CM_getMaxSuggestions() {
   return DEFAULT_MAX_SUGGESTIONS
-});
+})
 
 CommandManager.__defineSetter__("maxSuggestions", function CM_setMaxSuggestions(value) {
   var num = Math.max(MIN_MAX_SUGGS, Math.min(value | 0, MAX_MAX_SUGGS));
-});
+})
 
 function CommandManager(cmdSource, parser, suggsNode, previewPaneNode) {
   this.__cmdSource = cmdSource;
@@ -23,14 +25,11 @@ function CommandManager(cmdSource, parser, suggsNode, previewPaneNode) {
   this.__queuedExecute = null;
   this.__lastAsyncSuggestionCb = Boolean;
   this.__nlParser = parser;
-  this.__dynaLoad = !parser;
   this.__activeQuery = NULL_QUERY;
   this.__domNodes = {
     suggs: suggsNode,
     preview: previewPaneNode,
   };
-
-  var iframe = document.querySelector('#ubiquity-browser')
 
   this._loadCommands();
 
@@ -131,21 +130,23 @@ CommandManager.prototype = {
     //console.log(activeSugg._verb.arguments[0].id)
     //console.log(activeSugg.args.object[0].text)
     //console.log('renderPreview', activeSugg.previewUrl)
+    //console.log(activeSugg)
     
     var iframe = this.__domNodes.preview,
         url = activeSugg.previewUrl
 
-    //this.__domNodes.preview.setAttribute('src', activeSugg.previewUrl)
-    this.__domNodes.preview.src = url
-    //this.__domNodes.preview.location = activeSugg.previewUrl
-    //this.__domNodes.preview.style.display = 'none'
+    //console.log('renderPreview', url)
+    if (iframe.src == url) {
+      iframe.contentWindow.postMessage({input: activeSugg.input}, '*')
+    }
+    else {
+      iframe.src = url
+    }
   },
 
   _renderAll: function CM__renderAll(context) {
-    //if (window.gUbiquity.isPanelOpen) {
       this._renderSuggestions();
       this._renderPreview(context);
-    //}
   },
 
   reset: function CM_reset() {
@@ -165,6 +166,7 @@ CommandManager.prototype = {
 
     var query = this.__activeQuery =
       this.__nlParser.newQuery(input, context, this.maxSuggestions, true);
+
     query.onResults = asyncSuggestionCb || this.__lastAsyncSuggestionCb;
 
     if (asyncSuggestionCb)
@@ -206,8 +208,7 @@ CommandManager.prototype = {
       this.__queuedExecute = doExecute;
   },
 
-  getSuggestionListNoInput:
-  function CM_getSuggListNoInput(context, asyncSuggestionCb) {
+  getSuggestionListNoInput: function CM_getSuggListNoInput(context, asyncSuggestionCb) {
     let noInputQuery = this.__nlParser.newQuery(
       "", context, 4 * CommandManager.maxSuggestions);
     noInputQuery.onResults = function onResultsNoInput() {
@@ -218,13 +219,14 @@ CommandManager.prototype = {
   makeCommandSuggester: function CM_makeCommandSuggester() {
     var self = this;
     return function getAvailableCommands(context, popupCb) {
-      self.getSuggestionListNoInput(context, popupCb);
-    };
+      self.getSuggestionListNoInput(context, popupCb)
+    }
   },
 
   remember: function CM_remember() {
     var {hilitedSuggestion} = this;
-    if (hilitedSuggestion) this.__nlParser.strengthenMemory(hilitedSuggestion);
+    if (hilitedSuggestion)
+      this.__nlParser.strengthenMemory(hilitedSuggestion);
   },
 
   get parser() this.__nlParser,
@@ -237,9 +239,9 @@ CommandManager.prototype = {
     this.__activeQuery.suggestionList[this.__hilitedIndex],
   get hilitedIndex() this.__hilitedIndex,
   set hilitedIndex(i) this.__hilitedIndex = i,
-};
+}
 
-function CommandAggregator(input) {
+function CommandAggregator(arrayOfCommands) {
   var self = this;
   var commands = {}
   var commandNames = [];
@@ -248,10 +250,13 @@ function CommandAggregator(input) {
 
   self.refresh = function FA_refresh() {
     commands = {}
-    commandNames = [];
-    commandsByName = {__proto__: null};
+    commandNames = []
+    commandsByName = {__proto__: null}
 
-    input.forEach(function(cmd) {
+    arrayOfCommands.forEach(self.addCommand)
+
+        /*
+    arrayOfCommands.forEach(function(cmd) {
       if (cmd.name && !cmd.names)
         cmd.names = [cmd.name]
       cmd.id = cmd.url
@@ -259,9 +264,10 @@ function CommandAggregator(input) {
         name: cmd.name,
         url: cmd.url,
         icon: cmd.icon,
-      });
+      })
       commands[cmd.url] = commandsByName[cmd.name] = cmd
     })
+    */
   }
 
   self.__defineGetter__("commandNames",
@@ -279,6 +285,18 @@ function CommandAggregator(input) {
     return commands[id] || commandsByName[id] || null
   }
 
-  if (input)
+  self.addCommand = function FA_addCommand(cmd) {
+    if (cmd.name && !cmd.names)
+      cmd.names = [cmd.name]
+    cmd.id = cmd.url
+    commandNames.push({
+      name: cmd.name,
+      url: cmd.url,
+      icon: cmd.icon,
+    })
+    commands[cmd.url] = commandsByName[cmd.name] = cmd
+  }
+
+  if (arrayOfCommands.length)
     self.refresh()
 }

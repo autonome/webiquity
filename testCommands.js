@@ -15,6 +15,23 @@ var testCommands = []
 
 /*
 testCommands.push({
+  name: 'search',
+  arguments: [
+    { id: 'search',
+      role: 'object',
+      nountype: noun_arb_text,
+      label: 'search text'
+    },
+  ],
+  previewUrl: 'http://localhost/webiquity/testCommand.html?preview={{search}}',
+  executeUrl: 'http://localhost/webiquity/testCommand.html?search={{search}}',
+  url: 'http://localhost/webiquity/',
+  icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+})
+*/
+
+/*
+testCommands.push({
   name: 'test',
   previewUrl: 'http://localhost',
   url: 'http://localhost',
@@ -39,6 +56,7 @@ testCommands.push({
 })
 */
 
+/*
 testCommands.push({
   name: 'duck',
   arguments: [
@@ -53,7 +71,9 @@ testCommands.push({
   url: 'http://www.duckduckgo.com',
   icon: 'http://g.etfv.co/http://www.duckduckgo.com',
 })
+*/
 
+/*
 testCommands.push({
   name: 'google',
   arguments: [
@@ -68,6 +88,7 @@ testCommands.push({
   url: 'http://www.google.com',
   icon: 'http://g.etfv.co/http://www.google.com',
 })
+*/
 
 /*
 testCommands.push({

@@ -1,45 +1,3 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ubiquity.
- *
- * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2007
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Atul Varma <atul@mozilla.com>
- *   Michael Kaply <mozilla@kaply.com>
- *   Jono DiCarlo <jdicarlo@mozilla.com>
- *   Maria Emerson <memerson@mozilla.com>
- *   Abimanyu Raja <abimanyuraja@gmail.com>
- *   Blair McBride <unfocused@gmail.com>
- *   Satoshi Murakami <murky.satyr@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
-
 // = Ubiquity =
 
 // == Ubiquity(panel, textBox, cmdManager) ==
@@ -57,6 +15,8 @@ function Ubiquity(panel, textBox, cmdManager) {
   this.__lastValue = "";
   this.__previewTimerID = -1;
   this.__lastKeyEvent = {};
+
+  this.closeable = false
 
   this.CommandHistory = CommandHistory
 
@@ -115,7 +75,6 @@ Ubiquity.prototype = {
 
   // === {{{ Ubiquity#panel }}} ===
   get panel() this.__panel,
-  get msgPanel() this.__panel,
 
   // === {{{ Ubiquity#textBox }}} ===
   get textBox() this.__textBox,
@@ -128,7 +87,7 @@ Ubiquity.prototype = {
   get lastKeyEvent() this.__lastKeyEvent,
 
   // === {{{ Ubiquity#isPanelOpen }}} ===
-  get isPanelOpen() this.__panel.display == 'block',
+  get isPanelOpen() this.__panel.display == 'block' || undefined,
 
   // === {{{ Ubiquity#inputDelay }}} ===
   // Delay between the user's last keyup and parsing in milliseconds.
@@ -161,7 +120,7 @@ Ubiquity.prototype = {
       this.__processInput();
     }
 
-    if (keyCode == KeyEvent.DOM_VK_ESCAPE)
+    if (keyCode == KeyEvent.DOM_VK_ESCAPE && this.closeable)
       this.closePanel()
   },
   __onkeypress: function U__onKeyPress(event) {
@@ -171,7 +130,10 @@ Ubiquity.prototype = {
 
     if (keyCode === this.__KEYCODE_EXECUTE) {
       this.__needsToExecute = true;
-      this.closePanel();
+      if (this.closeable)
+        this.closePanel();
+      else
+        this.execute();
       return true;
     }
 
@@ -217,7 +179,8 @@ Ubiquity.prototype = {
   },
 
   __onPanelBlur: function U__onPanelBlur() {
-    this.closePanel()
+    if (this.closeable)
+      this.closePanel()
   },
   __onPanelHidden: function U__onPanelHidden() {
     clearTimeout(this.__previewTimerID);
@@ -239,7 +202,7 @@ Ubiquity.prototype = {
   },
   __onPanelOpened: function U__onPanelOpened() {
     this.__lastValue = "";
-    // why doing this now?
+    // if anything is in there
     this.__processInput(true);
     var {__textBox} = this;
     __textBox.focus();
@@ -250,7 +213,7 @@ Ubiquity.prototype = {
     // left: open link / execute; middle: same but without closing panel
     var {button, target, view} = event;
     if (button === 2) return;
-    if (view.location.href === "chrome://ubiquity/content/suggest.html") {
+    if (view.location.href === ORIGIN_URL) {
       for (let lm = target, hilited = /\bhilited\b/;; lm = lm.parentNode) {
         if (!lm || !("className" in lm)) return;
         if (hilited.test(lm.className)) break;
@@ -267,7 +230,7 @@ Ubiquity.prototype = {
           ~href.lastIndexOf("resource://ubiquity/preview.html#", 0)) return;
       this.Utils.openUrlInBrowser(href);
     }
-    if (button === 0) this.closePanel();
+    if (button === 0 && this.closeable) this.closePanel();
     return true;
   },
 
@@ -286,7 +249,8 @@ Ubiquity.prototype = {
   __delayedProcessInput: function U__delayedProcessInput(self, context) {
     var input = self.__textBox.value;
     if (input.length > self.inputLimit ||
-        input && input === self.__lastValue) return;
+        input && input === self.__lastValue)
+      return;
 
     self.__cmdManager.updateInput(
       self.__lastValue = input,
@@ -302,7 +266,7 @@ Ubiquity.prototype = {
         this.__delayedProcessInput, this.inputDelay, this, context);
   },
 
-  __makeContext: function U__makeContext(ensureFocus) {
+  __makeContext: function U__makeContext() {
     return {
       screenX: this.__x,
       screenY: this.__y,
@@ -328,7 +292,7 @@ Ubiquity.prototype = {
       this.__lastValue = "";
       cmdMan.hilitedIndex = 0;
     }
-    var context = this.__makeContext(external);
+    var context = this.__makeContext();
     if (cmdMan.hilitedIndex < 1)
       this.__processInput(true, context);
     cmdMan.execute(context);
@@ -370,24 +334,27 @@ Ubiquity.prototype = {
     else
       this.openPanel();
   },
-};
+}
 
 var CommandHistory = (function() {
-  const SEPARATOR = "\n";
+  const SEPARATOR = "\n"
 
-    var cursor = -1,
-        _bin = null,
-        max = 20
-
+  var cursor = -1,
+      _bin = null,
+      max = 20
+  
   return {
-    get: function() {return ['?']},
+    get: function() {
+      return ['?']
+    },
     set: function set(arr) {
       _bin = arr;
       return this.save();
     },
 
     add: function add(txt) {
-      if (!(txt = txt.trim())) return this;
+      if (!(txt = txt.trim()))
+        return this;
       var bin = this.get(), idx = bin.indexOf(txt);
       if (~idx) bin.unshift(bin.splice(idx, 1)[0]);
       else {
@@ -432,6 +399,5 @@ var CommandHistory = (function() {
       }
       return false;
     }
-
   }
-}());
+}())

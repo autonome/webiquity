@@ -1,42 +1,4 @@
-/***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ubiquity.
- *
- * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2007
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Michael Yoshitaka Erlewine <mitcho@mitcho.com>
- *   Jono DiCarlo <jdicarlo@mozilla.com>
- *   Blair McBride <unfocused@gmail.com>
- *   Satoshi Murakami <murky.satyr@gmail.com>
- *   Brandon Pung <brandonpung@gmail.com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+var DEBUG = 0 
 
 var NLParser2 = {
   registry: {
@@ -70,8 +32,6 @@ var NLParser2 = {
     let parser = NLParser2.parserFactories[languageCode]();
     parser._suggestionMemory = suggestionMemory
     parser.setCommandList(verbList);
-
-    // initialize a bunch of shit
     parser.refreshCommandList()
 
     return parser;
@@ -1732,7 +1692,9 @@ var ParseQuery = function(parser, queryString, selObj, context,
 
 ParseQuery.prototype = {
   dump: function PQ_dump(msg) {
-    //Utils.dump(this._idTime + ":" + (new Date - this._idTime), msg);
+    if (!DEBUG)
+      return
+    Utils.dump(this._idTime + ":" + (new Date - this._idTime), msg);
   },
 
   // ** {{{ParseQuery#run()}}} **
@@ -1995,6 +1957,7 @@ ParseQuery.prototype = {
     // Also, don't run onResults here if this.finished,
     // as if the finished flag was just turned on, it would have independently
     // called onResults.
+        this.dump("calling onResults now");
     if (this.aggregateScoredParses().length > 0
          && !this.finished) {
       // THROTTLING OF ONRESULTS (#833) - still experimental
@@ -2004,7 +1967,6 @@ ParseQuery.prototype = {
                             progress >= throttleThreshold;
       if ((addedAny && (asyncFlag || progress >= throttleThreshold)) ||
         passedThreshold){
-        this.dump("calling onResults now");
         this.onResults();
       }
       this._previousProgress = progress;
@@ -2649,7 +2611,8 @@ Parse.prototype = {
         argInput = this.args.object[0].text
         url = this._verb.previewUrl
 
-    return url.replace('{{'+argId+'}}', argInput)
+    return url
+    //return url.replace('{{'+argId+'}}', argInput)
     //return this._verb.previewUrl;
   },
 
@@ -2844,4 +2807,31 @@ Parse.prototype = {
   }
 };
 
-function byScoreDescending(a, b) b.score - a.score;
+function byScoreDescending(a, b) {
+  b.score - a.score;
+}
+
+// TEMP: instead of loading all of registry.js
+NLParser2.loadParserMaker('en', function makeParser() new Parser({
+  lang: "en",
+  anaphora: ["this", "that", "it", "selection", "him", "her", "them"],
+  roles: [
+    {role: "goal", delimiter: "to"},
+    {role: "source", delimiter: "from"},
+    {role: "location", delimiter: "near"},
+    {role: "location", delimiter: "on"},
+    {role: "location", delimiter: "at"},
+    {role: "location", delimiter: "in"},
+    {role: "time", delimiter: "at"},
+    {role: "time", delimiter: "on"},
+    {role: "instrument", delimiter: "with"},
+    {role: "instrument", delimiter: "using"},
+    {role: "format", delimiter: "in"},
+    {role: "modifier", delimiter: "of"},
+    {role: "modifier", delimiter: "for"},
+    {role: "alias", delimiter: "as"},
+    {role: "alias", delimiter: "named"}
+  ],
+  branching: "right",
+  verbFinalMultiplier: 0.3
+}));

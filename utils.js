@@ -99,7 +99,7 @@ var Utils = (function() {
 
   U.dump = function niceDump() {
     var {caller} = arguments.callee;
-    dump((caller ? caller.name + ": " : "") +
+    console.log((caller ? caller.name + ": " : "") +
          Array.join(arguments, " ") + "\n");
   };
 
