@@ -1,0 +1,7 @@
+<script>
+  document.write('<h2>' + document.location.search + '</h2><br>')
+  window.onmessage = function(msg) {
+    document.body.innerHTML += msg.data.toSource() + '<br>'
+  }
+</script>
+
