@@ -1,30 +1,24 @@
 var gUbiquity = null,
     ORIGIN_URL = 'http://localhost/webiquity/demo.html'
 
-addEventListener("load", function ubiquityBoot() {
-  removeEventListener("load", ubiquityBoot, false)
-  ubiquitySetup()
+addEventListener("load", function ubiquitySetup() {
 
-  //tests.forEach(executeTest)
-}, false);
-
-function ubiquitySetup() {
-
-  var cmdSource = new CommandAggregator(testCommands)
-
-  var commands = cmdSource.getAllCommands(),
+  var cmdSource = new CommandAggregator(testCommands),
+      processedCommands = cmdSource.getAllCommands(),
       languageCode = 'en',
       suggestionMemory = new SuggestionMemory('somefuckingkey')
 
   var parser = NLParser2.makeParserForLanguage(
     languageCode,
-    commands,
+    processedCommands,
     suggestionMemory)
 
   var cmdMan = new CommandManager(
     cmdSource,
     parser,
+    // command suggestions
     document.getElementById("ubiquity-suggest-container"),
+    // preview pane
     document.getElementById("ubiquity-browser"))
 
   cmdMan.refresh()
@@ -34,6 +28,9 @@ function ubiquitySetup() {
   
   gUbiquity = new Ubiquity(panel, textinput, cmdMan)
 
+  // Hack for debugging
   gUbiquity.togglePanel()
-}
 
+  // Run tests
+  //tests.forEach(executeTest)
+}, false);

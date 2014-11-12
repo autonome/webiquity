@@ -15,6 +15,23 @@ var testCommands = []
 
 /*
 testCommands.push({
+  name: 'map',
+  arguments: [
+    { id: 'search',
+      role: 'object',
+      nountype: noun_arb_text,
+      label: 'place'
+    },
+  ],
+  previewUrl: 'http://localhost/webiquity/commands/testCommand.html?preview={{search}}',
+  executeUrl: 'http://localhost/webiquity/commands/testCommand.html?search={{search}}',
+  url: 'http://localhost/webiquity/',
+  icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+})
+*/
+
+/*
+testCommands.push({
   name: 'search',
   arguments: [
     { id: 'search',
@@ -23,8 +40,8 @@ testCommands.push({
       label: 'search text'
     },
   ],
-  previewUrl: 'http://localhost/webiquity/testCommand.html?preview={{search}}',
-  executeUrl: 'http://localhost/webiquity/testCommand.html?search={{search}}',
+  previewUrl: 'http://localhost/webiquity/commands/testCommand.html?preview={{search}}',
+  executeUrl: 'http://localhost/webiquity/commands/testCommand.html?search={{search}}',
   url: 'http://localhost/webiquity/',
   icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
 })

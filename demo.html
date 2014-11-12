@@ -28,7 +28,6 @@
 
   <!--
   <script type="application/javascript;version=1.8" src="asyncStorage.js"></script>
-  <script type="application/javascript;version=1.8" src="mustache.js"></script>
   -->
 
   <script type="application/javascript;version=1.8" src="eventEmitter.js"></script>
@@ -41,6 +40,7 @@
   <script type="application/javascript;version=1.8" src="registry.js"></script>
   -->
 
+  <script type="application/javascript;version=1.8" src="js/command_history.js"></script>
   <script type="application/javascript;version=1.8" src="cmdmanager.js"></script>
   <script type="application/javascript;version=1.8" src="ubiquity.js"></script>
 
@@ -49,18 +49,20 @@
   // disabled for now. once everything is working
   <script type="application/javascript;version=1.8" src="testCommands.js"></script>
   -->
+
   <script type="application/javascript;version=1.8" src="tests.js"></script>
 
 <!--
 
-* no commands showing up from tests
-* only one command showing up in suggs
 * move all UI from cmdmanager to ubiquity
 * move all UI out of parser (Parse obj)
 * move to modules
 * reimplement storage (CommandHistory, etc)
 
 -->
+
+<!-- just put this here for convenience -->
+<iframe id="notifier-receiver" src="receiver.html">
 
 </body>
 </html>

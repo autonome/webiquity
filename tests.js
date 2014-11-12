@@ -13,9 +13,9 @@ function makeCommand(cmdName) {
         label: 'search text'
       },
     ],
-    previewUrl: 'http://localhost/webiquity/testCommand.html?cmd=' + cmdName + '&preview={{search}}',
-    executeUrl: 'http://localhost/webiquity/testCommand.html?cmd=' + cmdName + '&search={{search}}',
-    url: 'http://localhost/webiquity/testCommand.html?cmd=' + cmdName,
+    previewUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&preview={{search}}',
+    executeUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&search={{search}}',
+    url: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName,
     icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
   }
 }

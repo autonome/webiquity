@@ -2,8 +2,8 @@
 
 // == Ubiquity(panel, textBox, cmdManager) ==
 // Creates a Ubiquity interface and binds it to the given panel and text box.
-// * {{{panel}}} should be a <div/>.
-// * {{{textBox}}} should be a <input type="text"/>.
+// * {{{panel}}} top-level <div> containing suggestion list, preview pane, textbox.
+// * {{{textBox}}} the <input type="text">.
 // * {{{cmdManager}}} is a {{{CommandManager}}} instance.
 
 function Ubiquity(panel, textBox, cmdManager) {
@@ -105,7 +105,7 @@ Ubiquity.prototype = {
   __onkeydown: function U__onKeyDown(event) {
     this.__lastKeyEvent = event;
     if (event.ctrlKey && event.altKey && event.which &&
-        this.__cmdManager.previewer.activateAccessKey(event.which))
+        this.__cmdManager.preview.activateAccessKey(event.which))
       return true;
   },
   __onkeyup: function U__onKeyup(event) {
@@ -162,7 +162,7 @@ Ubiquity.prototype = {
     var rate = this.__KEYMAP_SCROLL_RATE[keyCode];
     if (rate) {
       let [x, y] = event.shiftKey ? [rate, 0] : [0, rate];
-      this.__cmdManager.previewer.scroll(x, y);
+      this.__cmdManager.preview.scroll(x, y);
       return true;
     }
   },
@@ -336,68 +336,3 @@ Ubiquity.prototype = {
   },
 }
 
-var CommandHistory = (function() {
-  const SEPARATOR = "\n"
-
-  var cursor = -1,
-      _bin = null,
-      max = 20
-  
-  return {
-    get: function() {
-      return ['?']
-    },
-    set: function set(arr) {
-      _bin = arr;
-      return this.save();
-    },
-
-    add: function add(txt) {
-      if (!(txt = txt.trim()))
-        return this;
-      var bin = this.get(), idx = bin.indexOf(txt);
-      if (~idx) bin.unshift(bin.splice(idx, 1)[0]);
-      else {
-        if (bin.unshift(txt) > max) bin.length = max;
-      }
-      return this.save();
-    },
-
-    save: function save() {
-      //Utils.prefs.set(PREF_BIN, _bin.join(SEPARATOR));
-      return this;
-    },
-
-    go: function go(num, U) {
-      var {textBox} = U = U || window.gUbiquity;
-      var bin = get();
-      if (cursor < 0 && textBox.value) {
-        this.add(textBox.value);
-        cursor = 0;
-      }
-      cursor -= num;
-      if (cursor < -1 || bin.length <= cursor)
-        cursor = -1;
-      U.preview(bin[cursor] || "");
-      return this;
-    },
-
-    complete: function complete(rev, U) {
-      var {textBox} = U = U || window.gUbiquity;
-      var {value: txt, selectionStart: pos} = textBox, bin = this.get();
-      if (rev)
-        bin = bin.slice().reverse();
-      pos -= txt.length - (txt = txt.trimLeft()).length;
-      var key = txt.slice(0, pos),
-          re = RegExp("^" + Utils.regexp.quote(key), "i");
-      for (let h, i = bin.indexOf(txt); h = bin[++i];) {
-        if (re.test(h)) {
-          U.preview(h);
-          textBox.setSelectionRange(key.length, textBox.textLength);
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-}())
