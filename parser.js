@@ -1095,14 +1095,13 @@ Parser.prototype = {
   // An array of //new// parses is returned, so it should then be
   // {{{concat}}}'ed to the current running list of parses.
   applyObjectsToOtherRoles: function applyObjectsToOtherRoles(parse) {
-    var returnArr = [];
 
     // if nothing had the role "object", return nothing.
     if (!parse.args.object) return [];
 
-    let baseParses = [parse];
-    let returnArr = [];
-    let rolesToTry = this._otherRolesCache;
+    var baseParses = [parse];
+    var returnArr = [];
+    var rolesToTry = this._otherRolesCache;
     if (parse._verb.id) {
       rolesToTry = {};
       for each (let arg in parse._verb.arguments) {
@@ -1150,7 +1149,7 @@ Parser.prototype = {
       returnArr = returnArr.concat(newParses);
     }
 
-    let realReturnArr = [];
+    var realReturnArr = [];
     for each (let parse in returnArr) {
       if (!parse.args.object.length ||
            (parse.args.object.length === 1
