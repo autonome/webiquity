@@ -184,14 +184,13 @@ var NounUtils = (function() {
     // we'll stick some html tags into the summary so that the part
     // that comes from the text selection can be visually marked in
     // the suggestion list.
-    var [start, end] = selectionIndices || 0;
     summary = (
-      start < end
-      ? (Utils.escapeHtml(summary.slice(0, start)) +
+      selectionIndices
+      ? (Utils.escapeHtml(summary.slice(0, selectionIndices[0])) +
          "<span class='selection'>" +
-         Utils.escapeHtml(summary.slice(start, end)) +
+         Utils.escapeHtml(summary.slice(start, selectionIndices[1])) +
          "</span>" +
-         Utils.escapeHtml(summary.slice(end)))
+         Utils.escapeHtml(summary.slice(selectionIndices[1])))
       : Utils.escapeHtml(summary));
 
     return {
