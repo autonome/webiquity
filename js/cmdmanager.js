@@ -45,12 +45,12 @@
       switch (event.type) {
         case "click": {
           if (event.button === 2) return;
-          let {target} = event;
+          var {target} = event;
           do {
             if (!("hasAttribute" in target)) return;
             if (target.hasAttribute("index")) break;
           } while ((target = target.parentNode));
-          let index = +target.getAttribute("index");
+          var index = +target.getAttribute("index");
           if (this.__hilitedIndex === index) return;
           this.__hilitedIndex = index;
           this.__lastAsyncSuggestionCb();
@@ -109,8 +109,8 @@
     _renderSuggestions: function CM__renderSuggestions() {
       var {escapeHtml} = Utils, content = "";
       var {__activeQuery: {suggestionList}, __hilitedIndex: hindex} = this;
-      for (let i = 0, l = suggestionList.length; i < l; ++i) {
-        let {displayHtml, icon} = suggestionList[i];
+      for (var i = 0, l = suggestionList.length; i < l; ++i) {
+        var {displayHtml, icon} = suggestionList[i];
         content += (
           '<div class="suggested' + (i === hindex ? " hilited" : "") +
           '" index="' + i + '"><div class="cmdicon">' +
@@ -210,7 +210,7 @@
     },
 
     getSuggestionListNoInput: function CM_getSuggListNoInput(context, asyncSuggestionCb) {
-      let noInputQuery = this.__nlParser.newQuery(
+      var noInputQuery = this.__nlParser.newQuery(
         "", context, 4 * CommandManager.maxSuggestions);
       noInputQuery.onResults = function onResultsNoInput() {
         asyncSuggestionCb(noInputQuery.suggestionList);

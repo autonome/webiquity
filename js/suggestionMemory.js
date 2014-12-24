@@ -1,5 +1,7 @@
 // = SuggestionMemory =
 
+(function(exports) {
+
 const Z = {__proto__: null}; // keep this empty!
 
 // In the db schema, one row represents the fact that for the
@@ -208,3 +210,7 @@ SuggestionMemory.prototype = {
     this._init(this._id);
   },
 }
+
+exports.SuggestionMemory = SuggestionMemory;
+
+})(window);

@@ -9,6 +9,8 @@
 // ** {{{noSelection}}}
 // ** {{{noExternalCalls}}}
 
+(function(exports) {
+
 var NounUtils = (function() {
 
   var nu = {}
@@ -1312,7 +1314,13 @@ function formatGooglePlacemark(placemark, score) {
   return NounUtils.makeSugg(placemark.address, null, data, score);
 }
 
+exports.NounUtils = NounUtils;
+exports.noun_arb_text = noun_arb_text;
 
+})(window);
+
+
+/*
 // ** DEPRECATED ** \\
 // {{{noun_type_language}}}\\
 // {{{noun_type_commands}}}\\
@@ -1329,3 +1337,4 @@ for (let [old, now] in new Iterator({
   this[sym] = now;
 }
 
+*/

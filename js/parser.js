@@ -1,3 +1,5 @@
+(function(exports) {
+
 var DEBUG = 0 
 
 var NLParser2 = {
@@ -2834,3 +2836,7 @@ NLParser2.loadParserMaker('en', function makeParser() new Parser({
   branching: "right",
   verbFinalMultiplier: 0.3
 }));
+
+exports.NLParser2 = NLParser2;
+
+})(window);

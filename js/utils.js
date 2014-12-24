@@ -42,6 +42,8 @@
 // for use by chrome code.  Everything clients need is contained within
 // the {{{Utils}}} namespace.
 
+(function(exports) {
+
 var Utils = (function() {
   //"use strict";
 
@@ -810,3 +812,6 @@ var Utils = (function() {
 
   return U
 }())
+
+  exports.Utils = Utils;
+})(window);

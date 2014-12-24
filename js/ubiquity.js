@@ -141,7 +141,7 @@ Ubiquity.prototype = {
       if (ctrlKey)
         this.CommandHistory.complete(event.shiftKey, this);
       else {
-        let {completionText} = this.__cmdManager.hilitedSuggestion || 0;
+        var {completionText} = this.__cmdManager.hilitedSuggestion || 0;
         if (completionText)
           this.__textBox.value = this.__lastValue = completionText;
       }
@@ -161,7 +161,7 @@ Ubiquity.prototype = {
 
     var rate = this.__KEYMAP_SCROLL_RATE[keyCode];
     if (rate) {
-      let [x, y] = event.shiftKey ? [rate, 0] : [0, rate];
+      var [x, y] = event.shiftKey ? [rate, 0] : [0, rate];
       this.__cmdManager.preview.scroll(x, y);
       return true;
     }
@@ -214,7 +214,7 @@ Ubiquity.prototype = {
     var {button, target, view} = event;
     if (button === 2) return;
     if (view.location.href === ORIGIN_URL) {
-      for (let lm = target, hilited = /\bhilited\b/;; lm = lm.parentNode) {
+      for (var lm = target, hilited = /\bhilited\b/;; lm = lm.parentNode) {
         if (!lm || !("className" in lm)) return;
         if (hilited.test(lm.className)) break;
       }
