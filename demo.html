@@ -7,6 +7,9 @@
 </head>
 <body>
   <div>
+    <div id="addcmddiv">
+      <input type="text" id="addcmdinput" placeholder="Add command URL">
+    </div>
     <div id="ubiquity-transparent-panel">
       <div id="ubiquity-panel">
         <div id="ubiquity-frame">
@@ -26,23 +29,20 @@
     </div>
   </div>
 
-  <!--
-  <script type="application/javascript;version=1.8" src="asyncStorage.js"></script>
-  -->
-
   <script type="application/javascript;version=1.8" src="js/eventEmitter.js"></script>
 
   <script type="application/javascript;version=1.8" src="js/utils.js"></script> 
   <script type="application/javascript;version=1.8" src="js/nountypes.js"></script>
   <script type="application/javascript;version=1.8" src="js/suggestionMemory.js"></script>
   <script type="application/javascript;version=1.8" src="js/parser.js"></script>
-  <!--
-  <script type="application/javascript;version=1.8" src="registry.js"></script>
-  -->
-
   <script type="application/javascript;version=1.8" src="js/command_history.js"></script>
   <script type="application/javascript;version=1.8" src="js/cmdmanager.js"></script>
-  <script type="application/javascript;version=1.8" src="js/ubiquity.js"></script>
+  <script type="application/javascript;version=1.8" src="js/ui.js"></script>
+
+  <!-- just loading EN at the moment -->
+  <!--
+  <script type="application/javascript;version=1.8" src="locales.js"></script>
+  -->
 
   <script type="application/javascript;version=1.8" src="js/init.js"></script>
 
@@ -50,7 +50,6 @@
   // disabled for now. once everything is working
   <script type="application/javascript;version=1.8" src="test/testCommands.js"></script>
   -->
-
   <script type="application/javascript;version=1.8" src="test/tests.js"></script>
 
 <!--
@@ -63,7 +62,7 @@
 -->
 
 <!-- just put this here for convenience -->
-<iframe id="notifier-receiver" src="receiver.html">
+<iframe id="notifier-receiver" src="receiver.html" style="display: none;">
 
 </body>
 </html>

@@ -28,14 +28,14 @@ function makeCommand(cmdName) {
 // zero input
 tests.push({
   searchString: '',
-  resultCount: 0,
+  expectedCount: 0,
   results: []
 })
 
 // match one command
 tests.push({
   searchString: 'ap',
-  resultCount: 1,
+  expectedCount: 1,
   results: []
 })
 
@@ -44,11 +44,17 @@ function executeTest(test) {
   document.querySelector('#ubiquity-entry').value = test.searchString
 
   // check suggestion count
-  var count = suggestionCount()
-  console.log('test ', test.searchString, 'suggestion count matches?', test.resultCount, count, count === test.resultCount)
+  var count = suggestionCount(),
+      passed = count === test.expectedCount,
+      consoleFunc = passed ? console.log : console.error;
+  consoleFunc.call(console, 'test>>> ', test.searchString, 'expected', test.expectedCount, 'received', count);
 }
 
 function suggestionCount() {
   var nodes = document.querySelectorAll(".suggested")
   return nodes.length || 0
 }
+
+function runTests() {
+  tests.forEach(executeTest)
+};

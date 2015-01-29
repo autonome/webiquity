@@ -1,12 +1,10 @@
-// = Ubiquity =
-
-// == Ubiquity(panel, textBox, cmdManager) ==
-// Creates a Ubiquity interface and binds it to the given panel and text box.
+// == WebiquityUI(panel, textBox, cmdManager) ==
+// Creates the interface and binds it to the given panel and text box.
 // * {{{panel}}} top-level <div> containing suggestion list, preview pane, textbox.
 // * {{{textBox}}} the <input type="text">.
 // * {{{cmdManager}}} is a {{{CommandManager}}} instance.
 
-function Ubiquity(panel, textBox, cmdManager) {
+function WebiquityUI(panel, textBox, cmdManager) {
 
   this.__panel = panel;
   this.__textBox = textBox;
@@ -48,8 +46,8 @@ function Ubiquity(panel, textBox, cmdManager) {
   }
 }
 
-Ubiquity.prototype = {
-  constructor: Ubiquity,
+WebiquityUI.prototype = {
+  constructor: WebiquityUI,
   toString: function U_toString() "[object Ubiquity]",
 
   __KEYCODE_EXECUTE : KeyEvent.DOM_VK_RETURN,
@@ -210,16 +208,20 @@ Ubiquity.prototype = {
   },
 
   __onclick: function U__onClick(event) {
-    // left: open link / execute; middle: same but without closing panel
+    // left: open link / execute
+    // middle: same but without closing panel
     var {button, target, view} = event;
+    // ???
     if (button === 2) return;
-    if (view.location.href === ORIGIN_URL) {
+    // ???
+    if (view.location.href === window.top.location.href) {
       for (var lm = target, hilited = /\bhilited\b/;; lm = lm.parentNode) {
         if (!lm || !("className" in lm)) return;
         if (hilited.test(lm.className)) break;
       }
       this.execute();
     }
+    // ???
     else {
       target.accessKey && setTimeout(function U_refocusTextBox(self) {
         if (self.isPanelOpen) self.__textBox.focus();
@@ -230,6 +232,7 @@ Ubiquity.prototype = {
           ~href.lastIndexOf("resource://ubiquity/preview.html#", 0)) return;
       this.Utils.openUrlInBrowser(href);
     }
+    // ???
     if (button === 0 && this.closeable) this.closePanel();
     return true;
   },

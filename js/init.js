@@ -1,35 +1,34 @@
-var gUbiquity = null,
-    ORIGIN_URL = 'http://localhost/webiquity/demo.html'
-
 addEventListener("load", function ubiquitySetup() {
 
-  var cmdSource = new CommandAggregator(testCommands),
-      processedCommands = cmdSource.getAllCommands(),
+  //var commands = [],
+  var commands = testCommands,
       languageCode = 'en',
       suggestionMemory = new SuggestionMemory('somefuckingkey')
 
   var parser = NLParser2.makeParserForLanguage(
     languageCode,
-    processedCommands,
+    [],
     suggestionMemory)
 
-  var cmdMan = new CommandManager(
-    cmdSource,
+  var cmdMgr = new CommandManager(
+    commands,
     parser,
     // command suggestions
     document.getElementById("ubiquity-suggest-container"),
     // preview pane
     document.getElementById("ubiquity-browser"))
 
-  cmdMan.refresh()
+  cmdMgr.refresh()
 
   var panel = document.getElementById("ubiquity-transparent-panel"),
       textinput = document.getElementById("ubiquity-entry")
   
-  gUbiquity = new Ubiquity(panel, textinput, cmdMan)
+  var wui = new WebiquityUI(panel, textinput, cmdMgr)
 
-  // Hack for debugging
-  gUbiquity.togglePanel()
+  // Open UI by default.
+  // Hack for debugging. When included as content script, need to have opened
+  // via user-configurable key command, gesture or voice command.
+  wui.togglePanel()
 
   // Run tests
   //tests.forEach(executeTest)

@@ -18,8 +18,10 @@
     var num = Math.max(MIN_MAX_SUGGS, Math.min(value | 0, MAX_MAX_SUGGS));
   })
 
-  function CommandManager(cmdSource, parser, suggsNode, previewPaneNode) {
-    this.__cmdSource = cmdSource;
+  function CommandManager(commands, parser, suggsNode, previewPaneNode) {
+    this.__commands = {};
+    this.__commandNames = [];
+    this.__commandsByName = {};
     this.__hilitedIndex = 0;
     this.__lastInput = "";
     this.__lastSuggestion = null;
@@ -32,15 +34,47 @@
       preview: previewPaneNode,
     };
 
-    this._loadCommands();
+    if (commands.length) {
+      commands.forEach(this.addCommand.bind(this))
+      this._updateParserWithCommands();
+    }
 
     this.setPreviewState("no-suggestions");
 
     suggsNode.addEventListener("click", this, false);
     suggsNode.addEventListener("DOMMouseScroll", this, false);
+
+    this.__defineGetter__("commandNames", function CM_cmdNames() {
+      return this.__commandNames
+    })
   }
 
   CommandManager.prototype = {
+
+    getAllCommands: function CM_getAllCommands() {
+      return this.__commands
+    },
+
+    getCommand: function CM_getCommand(id) {
+      return this.__commands[id] || null
+    },
+
+    getCommandByName: function CM_getCommand(name) {
+      return this.__commandsByName[name] || null
+    },
+
+    addCommand: function CM_addCommand(cmd) {
+      if (cmd.name && !cmd.names)
+        cmd.names = [cmd.name]
+      cmd.id = cmd.url
+      this.__commandNames.push({
+        name: cmd.name,
+        url: cmd.url,
+        icon: cmd.icon,
+      })
+      this.__commands[cmd.url] = this.__commandsByName[cmd.name] = cmd
+    },
+
     handleEvent: function CM_handleEvent(event) {
       switch (event.type) {
         case "click": {
@@ -84,8 +118,8 @@
       }
     },
 
+    // TODO: combine with reset()a?
     refresh: function CM_refresh() {
-      this.__cmdSource.refresh()
       this.reset()
     },
 
@@ -101,9 +135,8 @@
       if (context) this._renderAll(context);
     },
 
-    _loadCommands: function CM__loadCommands() {
-      if (this.__nlParser)
-        this.__nlParser.setCommandList(this.__cmdSource.getAllCommands());
+    _updateParserWithCommands: function CM__updateParserWithCommands() {
+      this.__nlParser.setCommandList(this.__commands);
     },
 
     _renderSuggestions: function CM__renderSuggestions() {
@@ -243,53 +276,4 @@
   }
 
   exports.CommandManager = CommandManager;
-})(window);
-
-(function(exports) {
-  function CommandAggregator(arrayOfCommands) {
-    var self = this;
-    var commands = {}
-    var commandNames = [];
-    var commandsByName = {__proto__: null};
-    var commandsByDomain = {__proto__: null};
-
-    self.refresh = function FA_refresh() {
-      commands = {}
-      commandNames = []
-      commandsByName = {__proto__: null}
-
-      arrayOfCommands.forEach(self.addCommand)
-    }
-
-    self.__defineGetter__("commandNames",
-                          function FA_cmdNames() commandNames)
-    self.__defineGetter__("commandsByName",
-                          function FA_cmdsByName() commandsByName)
-    self.__defineGetter__("commandsByDomain",
-                          function FA_cmdsByDomain() commandsByDomain)
-
-    self.getAllCommands = function FA_getAllCommands() {
-      return commands
-    }
-
-    self.getCommand = function FA_getCommand(id) {
-      return commands[id] || commandsByName[id] || null
-    }
-
-    self.addCommand = function FA_addCommand(cmd) {
-      if (cmd.name && !cmd.names)
-        cmd.names = [cmd.name]
-      cmd.id = cmd.url
-      commandNames.push({
-        name: cmd.name,
-        url: cmd.url,
-        icon: cmd.icon,
-      })
-      commands[cmd.url] = commandsByName[cmd.name] = cmd
-    }
-
-    if (arrayOfCommands.length)
-      self.refresh()
-  }
-  exports.CommandAggregator = CommandAggregator;
 })(window);

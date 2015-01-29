@@ -1,11 +1,27 @@
 <script>
 
-var url = 'https://ajax.googleapis.com/ajax/services/search/news?v=1.0&callback=processResults&q='
+window.onmessage = function(msg) {
+  var url = 'https://ajax.googleapis.com/ajax/services/search/news?v=1.0&&q='
+  url += msg.data
+  jsonp(url, 'callback', function(results) {
+    console.log(results)
+  })
+}
 
 
+function jsonp(url, handlerParamName, handler) {
+  var proxyHandlerName = Date.now()
 
-function processResults(results) {
-  console.log(results)
+  window[proxyHandlerName] = function(results) {
+    delete window[proxyHandlerName]
+    handler(results)
+  }
+
+  var script_element = document.createElement('script')
+
+  script_element.src = url + handlerParamName + '=' + proxyHandlerName
+
+  document.getElementsByTagName('head')[0].appendChild(script_element)
 }
 
 </script>
