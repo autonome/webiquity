@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script>
+
+// handle command input
+window.onmessage = function(msg) {
+  document.body.innerHTML += msg.data.toSource() + '<br>'
+
+  var request = {
+    location: new google.maps.LatLng(-34.397, 150.644),
+    radius: '500',
+    query: msg.data.input
+  };
+
+  service = new google.maps.places.PlacesService(map);
+  service.textSearch(request, callback);
+
+  function callback(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      createMarker(results[0]);
+    }
+  }
+
+}
+
+// setup map
+var map = null,
+    service = null
+
+function initialize() {
+  var mapOptions = {
+    zoom: 8,
+    center: new google.maps.LatLng(-34.397, 150.644)
+  }
+
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+    mapOptions);
+}
+
+
+function loadScript() {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&sensor=false&' +
+      'callback=initialize';
+  document.body.appendChild(script);
+}
+window.addEventListener('load', loadScript, false)
+
+// command definition
+var cmd = {
+  name: 'map',
+  arguments: [
+    { id: 'search',
+      role: 'object',
+      nountype: noun_arb_text,
+      label: 'place'
+    },
+  ],
+  previewUrl: 'http://localhost/webiquity/testCommand.html?preview={{search}}',
+  executeUrl: 'http://localhost/webiquity/testCommand.html?search={{search}}',
+  url: 'http://localhost/webiquity/',
+  icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+}
+
+</script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
+
+
+

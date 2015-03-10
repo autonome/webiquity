@@ -1,0 +1,134 @@
+<html>
+<head>
+	<title>Send email from Gmail</title>
+	<script src="bower_components/hello/dist/hello.all.min.js"></script>
+</head>
+<body>
+	<button id="login_google">Log in to Google</button>
+	<div id="profile_google"></div>
+	<div id="emailContainer">
+		<input id="to" type="text" placeholder="To:"></input>
+		<textarea id="msg"></textarea>
+		<button id="send">Send Email</button>
+	</div>
+<script>
+
+  var loggedIn = false,
+      account = null,
+      authResponse = null;
+
+  window.onmessage = function(msg) {
+		if (msg.data.installRequest) {
+		}
+		else if (loggedIn && msg.data.to) {
+	    qs('#msg').textContent = msg.data.toSource();
+		}
+  }
+
+	function qs(str) {
+		return document.querySelector(str);
+	}
+
+	function qsa(str) {
+		return [].slice.call(document.querySelectorAll(str));
+	}
+
+	qs('#login_google').addEventListener('click', function() {
+    if (!loggedIn) {
+  		hello('google').login();
+    }
+    else {
+  		hello('google').logout();
+    }
+	}, false);
+
+	qs('#send').addEventListener('click', function() {
+    if (loggedIn) {
+      var from = account.emails[0].value,
+          to = qs('#to').value,
+          body = qs('#msg').value,
+          subject = 'email subject'; // body; // TODO
+
+      var email = 
+        'From: ' + account.name + ' <' + encodeURIComponent(from) + '>\r\n' +
+        'To: ' + to + '\r\n' +
+        'Subject: ' + subject + '\r\n' +
+        '\r\n' +
+        body;
+      
+      var xhr = new XMLHttpRequest(),
+          bundle = {
+            raw: btoa(email)
+          },
+          stringified = JSON.stringify(bundle);
+
+      var url = 'https://www.googleapis.com/gmail/v1/users/' + from +
+                '/messages/send?key=' + supportedNetworks.google;
+
+      xhr.open('POST', url);
+
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.setRequestHeader('Authorization', 'Bearer ' + authResponse.authResponse.access_token);
+
+      xhr.onload = function() {
+        var resp = JSON.parse(xhr.responseText);
+        console.log(resp);
+        /*
+        (navigator.mozNotification.createNotification(
+          'Gmail Command',
+          'Message sent!'
+        )).show()
+        */
+      };
+
+      xhr.send(stringified);
+    }
+    else {
+      var n = navigator.mozNotification.createNotification(
+        "Gmail Command",
+        "You need to be logged in to send a message."
+      );
+      n.show();
+    }
+  });
+
+	var supportedNetworks = {
+		google: '860552354247-vnm9o4r1ichmhbp4p501si5hlevjtao6.apps.googleusercontent.com'
+	}
+
+	hello.init(supportedNetworks, {
+		scope: 'email,https://www.googleapis.com/auth/gmail.compose',
+		display: 'page',
+		redirect_uri: 'gmail-hello.html',
+		//oauth_proxy : 'https://auth-server.herokuapp.com/proxy'
+	});
+
+	hello.on('auth.login', function(auth){
+    //console.log('authResponse', auth);
+    authResponse = auth;
+		// call user information, for the given network
+		hello( auth.network ).api( '/me' ).then( function(r) {
+      //console.log(r)
+			loggedIn = true;
+      account = r;
+			var label = qs("#profile_"+ auth.network);
+      label.innerHTML = '<img src="' + account.thumbnail + '" /><span>Hey '+ account.name + '</span>';
+      var loginBtn = qs('#login_google');
+      loginBtn.textContent = 'Logout';
+		}, function(err) {
+			console.error(err)
+		});
+	});
+
+  hello.on('auth.logout', { force: true }, function(auth){
+    //console.log('logout', auth)
+    loggedIn = false;
+		var label = qs("#profile_"+ auth.network);
+    label.innerHTML = '';
+    var loginBtn = qs('#login_google');
+    loginBtn.textContent = 'Log in';
+  });
+</script>
+</body>
+</html>

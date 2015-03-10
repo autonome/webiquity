@@ -1,0 +1,34 @@
+<script>
+  document.body.innerHTML = '<h2>' + document.location.search + '</h2><br>'
+  window.addEventListener('message', function(msg) {
+    document.body.innerHTML += msg.data.toSource() + '<br>'
+  }, false)
+
+  var cmdName = 'Reminder',
+      cmdURL = document.location.href
+
+  function install() {
+    var cmdManifest = {
+      name: cmdName,
+      arguments: [
+        { id: 'time',
+          role: 'object',
+          nountype: 'noun_arb_text',
+          label: 'time/date'
+        }
+      ],
+      previewUrl: cmdURL + '?cmd=' + cmdName + '&preview={{time}}',
+      executeUrl: cmdURL + '?cmd=' + cmdName + '&search={{time}}',
+      url: cmdURL + '?cmd=' + cmdName,
+      icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+    }
+
+    window.opener.postMessage({
+      action: 'install',
+      manifest: cmdManifest
+    })
+  }
+
+  document.querySelector('#install').addEventListener('click', install, false)
+</script>
+<button id="install">Install Command</a>

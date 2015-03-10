@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>test</title>
+  <meta charset="utf-8">
+</head>
+<body>
+<div class="container">
+  <input type="text" class="in">
+  <div class="suggestions">
+  </div>
+  <iframe class="preview">
+  </iframe>
+</div>
+<script>
+  function qs(s) { return document.querySelector(s); }
+
+  var input = qs('.in');
+  input.addEventListener('keyup', onInput, false);
+  function onInput() {
+    var text = input.value;
+    var suggestions = getSuggestions(text);
+    updateSuggestions(suggestions)
+  }
+
+  function updateSuggestions(list) {
+    var container = qs('.suggestions');
+    while (container.childNodes.length) container.removeChild(container.firstChild)
+    list.forEach(function(entry) {
+      var suggestionNode = document.createElement('div');
+      suggestionNode.textContent = entry;
+      container.appendChild(suggestionNode);
+    });
+  }
+
+  function getSuggestions(text) {
+    return ['asdf', 'bsdfds'];
+  }
+</script>
+</body>
+</html>

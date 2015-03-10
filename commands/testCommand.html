@@ -1,0 +1,48 @@
+<html>
+<body>
+<script>
+
+  var cmdName = 'farble'
+  var commandDefinition = {
+    name: cmdName,
+    arguments: [
+      { id: 'search',
+        role: 'object',
+        nountype: 'noun_arb_text',
+        label: 'search text'
+      },
+    ],
+    previewUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&preview={{search}}',
+    executeUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&search={{search}}',
+    url: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName,
+    icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+  }
+
+  function onMessage(e) {
+
+    console.log(e)
+    return;
+    document.body.innerHTML += msg.data.toSource() + '<br>'
+    console.log(msg.data)
+
+    // User is installing
+		if (msg.data.installQuery) {
+      console.log('cmd install request')
+      e.source.postMessage(commandDefinition)
+    }
+    // User has installed
+		else if (msg.data.installConfirmation) {
+      console.log('cmd installed!')
+    }
+    // User is previewing or executing
+    // TODO: figure out the distinction
+    else if (msg.data) {
+      console.log('preview/execute')
+    }
+  }
+  window.addEventListener('message', onMessage, false);
+
+</script>
+</body>
+</html>
+

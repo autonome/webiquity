@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title></title>
+  </head>
+<body>
+<script>
+
+  window.onmessage = function(msg) {
+    console.log('postmsg', msg.data);
+    document.body.innerHTML += msg.data.toSource() + '<br>'
+  }
+
+  /*
+  var cmdName = 'farble'
+
+  function onMessage(e) {
+		if (msg.data.installQuery) {
+      e.source.postMessage({
+        name: cmdName,
+        arguments: [
+          { id: 'search',
+            role: 'object',
+            nountype: noun_arb_text,
+            label: 'search text'
+          },
+        ],
+        previewUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&preview={{search}}',
+        executeUrl: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName + '&search={{search}}',
+        url: 'http://localhost/webiquity/commands/testCommand.html?cmd=' + cmdName,
+        icon: 'http://localhost/webiquity/skin/icons/application_view_list.png'
+      }
+    })
+  }
+
+  window.addEventListener('message', onMessage, false);
+  */
+</script>
+<iframe src=""></iframe>
+</body>
+</html>
