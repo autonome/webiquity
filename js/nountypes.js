@@ -533,10 +533,7 @@ var noun_type_url = {
   noExternalCalls: true,
   cacheTime: 0,
   default: function nt_url_default() {
-    var {window} = NounUtils;
     var {location: {href}, document: {activeElement}} = window;
-    if (/^https:\/\/www\.google\.[a-z.]+\/reader\/view\b/.test(href))
-      try { href = window.wrappedJSObject.getPermalink().url } catch ([]) {}
     var suggs = [NounUtils.makeSugg(href, null, null, .5)];
     if (activeElement && activeElement.href)
       suggs.unshift(NounUtils.makeSugg(activeElement.href, null, null, .7));
@@ -1316,6 +1313,7 @@ function formatGooglePlacemark(placemark, score) {
 
 exports.NounUtils = NounUtils;
 exports.noun_arb_text = noun_arb_text;
+exports.noun_type_url = noun_type_url;
 
 })(window);
 

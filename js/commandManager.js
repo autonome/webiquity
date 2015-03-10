@@ -169,7 +169,8 @@
       var iframe = this.__domNodes.preview,
           url = activeSugg.previewUrl
 
-      //console.log('renderPreview', url)
+      //console.log('cmdmgr.renderPreview', url)
+
       if (iframe.src == url) {
         iframe.contentWindow.postMessage({input: activeSugg.input}, '*')
       }
@@ -236,6 +237,7 @@
         }
       }
       var {hilitedSuggestion} = this;
+      console.log('cmdMgr.execute', hilitedSuggestion)
       if (hilitedSuggestion)
         doExecute.call(this, hilitedSuggestion);
       else

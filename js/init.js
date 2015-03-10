@@ -1,13 +1,13 @@
 addEventListener("load", function ubiquitySetup() {
 
-  //var commands = [],
-  var commands = testCommands,
+  var commands = internalCommands.concat(testCommands),
       languageCode = 'en',
       suggestionMemory = new SuggestionMemory('somefuckingkey')
 
+  // TODO: maybe remove the commands from here altogether
   var parser = NLParser2.makeParserForLanguage(
     languageCode,
-    [],
+    [], // commands are added to the parser from the cmd manager
     suggestionMemory)
 
   var cmdMgr = new CommandManager(
